@@ -14,6 +14,7 @@ menedżer plików, terminal, okna) — bez wpisywania żadnej komendy.
 
 | Plik | Rola |
 |---|---|
+| **`Ubuntu-XFCE-Installer.exe`** (zakładka [Releases](../../releases/latest)) | **Najprostsza opcja.** Jeden plik — pobierz, uruchom, koniec. Robi to samo co punkty poniżej, automatycznie. |
 | `windows/Install-Prerequisites.ps1` | **Uruchamiane raz.** Sprawdza środowisko, instaluje WSL2/Ubuntu/VcXsrv/XFCE, tworzy skróty na Pulpicie. |
 | `windows/Start-Ubuntu-XFCE.ps1` | Codzienny start. Samodzielny plik kopiowany na Pulpit — to właśnie ten plik odpalany jest dwuklikiem. |
 | `windows/Stop-Ubuntu-XFCE.ps1` | Bezpieczne zamknięcie sesji XFCE (opcjonalnie też X Servera). |
@@ -21,7 +22,19 @@ menedżer plików, terminal, okna) — bez wpisywania żadnej komendy.
 | `linux/start-xfce-session.sh` | Skrypt startowy sesji XFCE w WSL — dynamicznie wykrywa IP hosta Windows, ustawia `DISPLAY` i startuje `startxfce4`. |
 | `SETUP.md` | Instrukcja jednorazowej konfiguracji i rozwiązywanie problemów. |
 
-## Szybki start
+## Szybki start — opcja A: jeden plik .exe (zalecane)
+
+1. Wejdź na [zakładkę **Releases**](../../releases/latest) tego repozytorium i pobierz
+   `Ubuntu-XFCE-Installer.exe`.
+2. Uruchom go (dwuklik). Poprosi o uprawnienia administratora (UAC) — potwierdź.
+3. Poczekaj, aż zakończy instalację (może potrwać kilka minut; przy pierwszej instalacji
+   Ubuntu poprosi w osobnym oknie o ustawienie nazwy użytkownika i hasła — dokończ to tam).
+4. Na Pulpicie pojawi się **`Ubuntu XFCE`** — od teraz to jedyny plik, którego potrzebujesz.
+
+Instalator sam pobiera/instaluje WSL2, Ubuntu, VcXsrv i XFCE oraz kopiuje skrypty
+startowe na Pulpit — nie trzeba klonować repozytorium ani wpisywać żadnych komend.
+
+## Szybki start — opcja B: ze źródła
 
 1. Sklonuj/skopiuj to repozytorium na dysk Windows (np. `C:\wslde`), zachowując strukturę folderów `windows/` i `linux/` razem.
 2. Otwórz PowerShell w folderze repo i uruchom:

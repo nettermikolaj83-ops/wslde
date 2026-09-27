@@ -1,0 +1,30 @@
+name: Release Windows installer
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Build Ubuntu-XFCE-Installer.exe
+        run: |
+          mkdir -p dist
+          GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o dist/Ubuntu-XFCE-Installer.exe .
+
+      - name: Create release and upload installer
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/Ubuntu-XFCE-Installer.exe
+          generate_release_notes: true

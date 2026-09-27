@@ -1,6 +1,10 @@
 # Konfiguracja i diagnostyka — Ubuntu XFCE na Windows (WSL2 + VcXsrv)
 
-## 1. Jednorazowa konfiguracja
+> **Najprościej:** pobierz `Ubuntu-XFCE-Installer.exe` z zakładki
+> [Releases](../../releases/latest) i uruchom go — robi wszystko poniżej automatycznie.
+> Ten dokument opisuje, co dzieje się „pod maską" i jak diagnozować problemy.
+
+## 1. Jednorazowa konfiguracja (ze źródła, bez .exe)
 
 1. Skopiuj cały folder repozytorium na dysk Windows, np. `C:\wslde` (foldery `windows\` i
    `linux\` muszą zostać razem — `Install-Prerequisites.ps1` odwołuje się do `..\linux\`).
