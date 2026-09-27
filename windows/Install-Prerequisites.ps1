@@ -252,6 +252,19 @@ $shortcut.Description = 'Uruchamia pelny pulpit Ubuntu XFCE (VcXsrv + WSL2)'
 $shortcut.Save()
 Write-Ok "Skrot utworzony: $shortcutPath"
 
+Write-Step "Tworze skrot 'Zamknij Ubuntu XFCE.lnk' na Pulpicie..."
+$stopShortcutPath = Join-Path $desktopPath 'Zamknij Ubuntu XFCE.lnk'
+$stopTargetScript = Join-Path $desktopPath 'Stop-Ubuntu-XFCE.ps1'
+
+$stopShortcut = $wsh.CreateShortcut($stopShortcutPath)
+$stopShortcut.TargetPath = "$Env:WINDIR\System32\WindowsPowerShell\v1.0\powershell.exe"
+$stopShortcut.Arguments = "-NoLogo -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$stopTargetScript`""
+$stopShortcut.WorkingDirectory = $desktopPath
+$stopShortcut.IconLocation = "$vcxsrvExe,0"
+$stopShortcut.Description = 'Zamyka sesje Ubuntu XFCE (X Server zostaje wlaczony)'
+$stopShortcut.Save()
+Write-Ok "Skrot utworzony: $stopShortcutPath"
+
 Write-Host "`n=====================================================" -ForegroundColor Magenta
 Write-Host " Konfiguracja zakonczona! " -ForegroundColor Magenta
 Write-Host "=====================================================" -ForegroundColor Magenta

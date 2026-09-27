@@ -64,12 +64,21 @@ export NO_AT_BRIDGE=1
 export XDG_SESSION_TYPE=x11
 export XDG_CURRENT_DESKTOP=XFCE
 
+# WSLg ustawia WAYLAND_DISPLAY globalnie w kazdej sesji WSL. Aplikacje GTK wykrywajac ten
+# socket domyslnie wola Waylanda (WSLg) nad X11 NIEZALEZNIE od DISPLAY - efekt: panel,
+# pulpit i inne komponenty XFCE laduja jako osobne natywne okna WSLg, a nie w oknie VcXsrv.
+# Wylaczamy Wayland i wymuszamy X11 dla GTK/Qt, zanim wystartuje jakikolwiek klient X.
+unset WAYLAND_DISPLAY
+export GDK_BACKEND=x11
+export QT_QPA_PLATFORM=xcb
+export CLUTTER_BACKEND=x11
+
 if [[ -S /mnt/wslg/PulseServer ]]; then
   export PULSE_SERVER=unix:/mnt/wslg/PulseServer
   echo "WSLg PulseAudio wykryty - dzwiek wlaczony przez $PULSE_SERVER"
 fi
 
-echo "DISPLAY=$DISPLAY"
+echo "DISPLAY=$DISPLAY, GDK_BACKEND=$GDK_BACKEND, WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-<brak>}"
 
 if command -v autocutsel >/dev/null 2>&1; then
   autocutsel -fork
@@ -77,4 +86,16 @@ if command -v autocutsel >/dev/null 2>&1; then
 fi
 
 echo "Startuje XFCE..."
-exec dbus-launch --exit-with-session startxfce4
+
+# Uruchamiamy dbus-launch w dwoch krokach (nie przez 'exec ... startxfce4' od razu), aby
+# zdazyc zaktualizowac srodowisko aktywacji D-Bus/systemd - usluzki startowane przez
+# aktywacje D-Bus (np. xfconfd, gvfsd) inaczej moglyby wciaz widziec WAYLAND_DISPLAY
+# z chwili startu VM i same probowac uzyc Waylanda.
+eval "$(dbus-launch --sh-syntax --exit-with-session)"
+if command -v dbus-update-activation-environment >/dev/null 2>&1; then
+  dbus-update-activation-environment --systemd \
+    DISPLAY WAYLAND_DISPLAY GDK_BACKEND QT_QPA_PLATFORM CLUTTER_BACKEND XDG_SESSION_TYPE XDG_CURRENT_DESKTOP \
+    2>/dev/null || true
+fi
+
+exec startxfce4
