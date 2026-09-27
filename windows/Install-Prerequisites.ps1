@@ -208,11 +208,14 @@ if (-not (Test-Path $setupScript) -or -not (Test-Path $launcherScript)) {
     throw "Nie znaleziono skryptow linux/setup-xfce.sh lub linux/start-xfce-session.sh w repozytorium."
 }
 
-# Skopiuj skrypty do domu uzytkownika w WSL przez stdin (konwersja CRLF->LF, dziala niezaleznie od dostepu do plikow Windows z WSL).
+# Skopiuj skrypty do domu uzytkownika w WSL przez stdin. PowerShell przy przekazywaniu
+# stringa do procesu natywnego przez pipeline dopisuje z powrotem CRLF (znany efekt
+# koncowych znakow linii .NET), wiec dodatkowo czyscimy \r po stronie Linuksa przez sed -
+# to gwarantuje czyste LF niezaleznie od tego, co zrobil PowerShell przy przesylaniu.
 function Copy-ScriptIntoWsl {
     param([string]$LocalPath, [string]$RemoteName, [string]$Distro)
     $content = (Get-Content -Path $LocalPath -Raw) -replace "`r`n", "`n"
-    $content | & wsl.exe -d $Distro -- bash -c "mkdir -p ~/.wslde-setup && cat > ~/.wslde-setup/$RemoteName && chmod +x ~/.wslde-setup/$RemoteName"
+    $content | & wsl.exe -d $Distro -- bash -c "mkdir -p ~/.wslde-setup && cat > ~/.wslde-setup/$RemoteName && sed -i 's/\r$//' ~/.wslde-setup/$RemoteName && chmod +x ~/.wslde-setup/$RemoteName"
 }
 
 Copy-ScriptIntoWsl -LocalPath $setupScript -RemoteName 'setup-xfce.sh' -Distro $ubuntu
